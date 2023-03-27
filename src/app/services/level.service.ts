@@ -1,3 +1,5 @@
+import { validate } from "class-validator";
+import { DeleteResult, UpdateResult } from "typeorm";
 import { AppDataSource } from "../../data-source";
 import { Level } from "../entities/level.entity";
 import { CustomError } from "../models/custom-error.model";
@@ -56,5 +58,68 @@ export default class LevelService {
         } catch (error) {
             return Promise.reject(error)
         }
+    }
+
+    /*---- CREATE ---*/
+    async create (level : Level):Promise<Level> {
+        if (!level || level != null) {
+            try {
+                const newLevel = {
+                    exercice : level.exercice,
+                    characters : level.characters,
+                    length : level.length
+                }
+                AppDataSource.manager.create(Level,newLevel)
+                const error = await validate(newLevel)
+    
+                if(error.length) {
+                    throw new CustomError("DATA_NOT_VALID", 500)
+                }
+                else {
+                    return await AppDataSource.manager.save(Level, newLevel)
+                }
+    
+            } catch (error){
+                throw new CustomError("ERROR", 500, {error})
+            }
+        }
+    }
+
+    //---------DELETE--------//
+    async delete (idToDelete : number):Promise<DeleteResult> {
+        if (!idToDelete || idToDelete != null) {
+            try {
+                return await AppDataSource.manager
+                                        .createQueryBuilder(Level,'level')
+                                        .softDelete()
+                                        .where("id = :id", { id: idToDelete})
+                                        .execute();
+                } catch (error) {
+                        return Promise.reject(error)
+                }  
+        }
+        else {
+            throw new CustomError("ID_NOT_DEFINED")
+        }
+         
+    }
+
+    //-------- UPDATE --------//
+    async update ( levelToUpdate : Level ):Promise<UpdateResult> {
+           
+        try {
+                return AppDataSource.manager.update(Level, {
+                    id : levelToUpdate.id
+                },
+                {
+                    characters : levelToUpdate.characters,
+                    exercice : levelToUpdate.exercice,
+                    length : levelToUpdate.length
+                })
+            } 
+        catch (error) {
+            return Promise.reject(error)
+        }
+
     }
 }

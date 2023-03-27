@@ -1,4 +1,4 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, DeleteDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Score } from "./score.entity";
 
 @Entity({name : 'levels'})
@@ -19,4 +19,9 @@ export class Level {
     @OneToMany(()=> Score, score => score.level)
     scores : Score
 
+    @UpdateDateColumn()
+    updated!: Date;
+
+    @DeleteDateColumn()
+    deletedAt?: Date;
 }

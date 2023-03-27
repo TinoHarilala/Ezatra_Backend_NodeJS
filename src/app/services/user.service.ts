@@ -92,7 +92,7 @@ export default class UserService {
                                 token : jwt.sign(
                                     {userId : data.id},
                                     'RANDOM_TOKEN_SECRET',
-                                    {expiresIn : '8h'}
+                                    {expiresIn : '12h'}
                                 )
                             }
                         }
