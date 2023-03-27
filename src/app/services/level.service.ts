@@ -9,7 +9,12 @@ export default class LevelService {
     async get():Promise<Level[] | null> {
         try {
             return await AppDataSource.manager.find(
-                Level
+                Level,
+                {
+                    order : {
+                        exercice : 'DESC'
+                    }
+                }
             )
 
         } catch (error) {
